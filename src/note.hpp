@@ -4,11 +4,8 @@
 
 struct Note : TransparentWidget {
     // the note text
-    std::string text = "WHY IS THIS HAPPENING?!";
-    // the note position
-    Vec pos = Vec(100.f, 100.f);
-    // the note size
-    Vec size = Vec(200.f, 100.f);
+    std::string text = "Hello World.";
+
     // the margin between the text and the note border
     Vec margin = Vec(15.f, 15.f);
     // the note font size
@@ -32,10 +29,8 @@ struct Note : TransparentWidget {
     
     // the note constructor
     Note() {
-        this->size.x = getTextWidth() + margin.x * 2.f;
-        this->size.y = getTextHeight() + margin.y * 2.f;
-        // set the note size
-        this->box.size = size;
+        this->box.size.x = getTextWidth() + margin.x * 2.f;
+        this->box.size.y = getTextHeight() + margin.y * 2.f;
     }
 
     // the note destructor
@@ -48,40 +43,39 @@ struct Note : TransparentWidget {
 
     // the note draw method
     void draw(const DrawArgs& args) override {
-        // get the note context
-        NVGcontext* vg = APP->window->vg;
-        // set the note background color
-        nvgFillColor(vg, this->background_color);
-        // set the note border color
-        nvgStrokeColor(vg, this->border_color);
-        // set the note border radius
-        nvgRoundedRect(vg, this->pos.x, this->pos.y, this->size.x, this->size.y, this->border_radius);
-        // set the note border width
-        nvgStrokeWidth(vg, this->border_width);
-        // fill the note
-        nvgFill(vg);
-        // stroke the note
-        nvgStroke(vg);
+        // Fill the widget with the background color and transparency based on box.pos and box.size
+        nvgBeginPath(args.vg);
+        nvgRoundedRect(args.vg, 0.f, 0.f, this->box.size.x, this->box.size.y, this->border_radius);
+        nvgFillColor(args.vg, this->background_color);
+        nvgFill(args.vg);
+
+
+        // Draw the border
+        nvgStrokeColor(args.vg, this->border_color);
+        nvgStrokeWidth(args.vg, this->border_width);
+        nvgRoundedRect(args.vg, 0.f, 0.f, this->box.size.x, this->box.size.y, this->border_radius);
+        nvgStroke(args.vg);
+
         // set the note font size
-        nvgFontSize(vg, this->font_size);
+        nvgFontSize(args.vg, this->font_size);
         // set the note font face
-        nvgFontFaceId(vg, APP->window->uiFont->handle);
+        nvgFontFaceId(args.vg, APP->window->uiFont->handle);
         // set the note text color
-        nvgFillColor(vg, this->text_color);
+        nvgFillColor(args.vg, this->text_color);
         // set the note text align
-        nvgTextAlign(vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
+        nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
         // set the note text
-        nvgText(vg, this->pos.x + this->size.x / 2.f, this->pos.y + this->size.y / 2.f, this->text.c_str(), NULL);
+        nvgText(args.vg, this->box.size.x / 2.f, this->box.size.y / 2.f, this->text.c_str(), NULL);
     }
 
     // the note step method
     void step() override {
-        // get the sample time
+        // // get the sample time
         float sample_time = APP->engine->getSampleTime();
         // decrease the note alpha transparency
-        this->alpha -= sample_time / duration;
+        this->alpha = std::max(0.0f, this->alpha - sample_time * 5000.f / duration);
         // move the note down slowly as it fades out
-        this->pos.y += sample_time * 50.f;
+        box.pos.y += sample_time * 100000.f;
         // set the note background color
         this->background_color = nvgRGBA(0x00, 0x00, 0x00, alpha * 0xff);
         // set the note border color
@@ -90,10 +84,7 @@ struct Note : TransparentWidget {
         this->text_color = nvgRGBA(0xff, 0xff, 0xff, alpha * 0xff);
         // check if the note should be removed
         if (this->alpha <= 0.f) {
-            // remove the note from the rack
-            if (this->parent != NULL) {
-                this->parent->removeChild(this);
-            }
+            requestDelete();
         }
     }
 

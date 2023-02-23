@@ -32,17 +32,10 @@ struct Notiphy : Module {
 			// create a note
 			Note* note = new Note();
 			// set the note position to the bottom right corner
-			note->pos.x = APP->scene->box.size.x - note->size.x - note->margin.x;
-			note->pos.y = APP->scene->box.size.y - note->size.y - note->margin.y;
+			note->box.pos.x = APP->scene->box.size.x - note->box.size.x - note->margin.x;
+			note->box.pos.y = APP->scene->box.size.y - note->box.size.y - note->margin.y;
 			// add the note to the rack
 			APP->scene->addChild(note);
-		}
-
-		// if there are any notes in the rack, run their step method
-		for (Widget* widget : APP->scene->children) {
-			if (Note* note = dynamic_cast<Note*>(widget)) {
-				note->step();
-			}
 		}
 	}
 };

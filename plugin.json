@@ -1,0 +1,25 @@
+{
+  "slug": "notiphy",
+  "name": "notiphy",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "notiphy",
+  "author": "alefnull",
+  "authorEmail": "nullalef@gmail.com",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": [
+    {
+      "slug": "notiphy",
+      "name": "notiphy",
+      "description": "notification test module",
+      "tags": [
+        "Utility"
+      ]
+    }
+  ]
+}
